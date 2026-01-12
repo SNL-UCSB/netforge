@@ -1,7 +1,6 @@
 #!/bin/bash
 NS1="ns1"
 NS2="ns2"
-
 NUM_QUEUE=4
 ip netns add $NS1
 ip link add veth1 type veth peer name veth2
@@ -49,8 +48,8 @@ ip netns exec $NS2 sed -i '1s/^/nameserver 8.8.8.8\n /' /etc/resolv.conf
 
 
 
-# ip netns exec $NS1 ip route change default dev veth1
-# ip netns exec $NS1 ip route change default veth1 via 172.16.3.1 
+ip netns exec $NS1 ip route change default dev veth1
+ip netns exec $NS1 ip route change default veth1 via 172.16.3.1 
 
 
 ip netns exec $NS2 ip route add 172.16.1.0/30 dev veth3 # made it work
