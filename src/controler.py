@@ -1,5 +1,6 @@
 import os 
 import subprocess
+import threading
 
 def run_sudo(cmd, password):
     subprocess.run(
@@ -89,3 +90,25 @@ def capture(outputFileName, duration, flags, ip, vantagePoints, overwrite=False)
             print("\033[91m***** ERROR: Capture file already exists! Use overwrite option to proceed. *****\033[0m")
             return
         subprocess.Popen(DownCommand, shell=True)
+
+
+
+
+def ctp(bg_locatoin, ctpName, passwrod ):
+    outgoing = (
+        f"ip netns exec ns1 tcpreplay-edit -i veth1 "
+        "--pnat=169.231.0.0/16:172.16.1.1,128.111.0.0/16:172.16.1.1 "
+        f"{bg_locatoin}outgoing/{ctpName}"
+    )
+
+    incoming = (
+        f"ip netns exec ns2 tcpreplay-edit -i veth3 "
+        "--pnat=169.231.0.0/16:172.16.1.1,128.111.0.0/16:172.16.1.1 "
+        f"{bg_locatoin}incoming/{ctpName}"
+    )
+
+    t1 = threading.Thread(target=run_sudo, args=(incoming, passwrod))
+    t2 = threading.Thread(target=run_sudo, args=(outgoing, passwrod))
+
+    t1.start()
+    t2.start()
